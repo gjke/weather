@@ -1,0 +1,15 @@
+Request: http://api.openweathermap.org/data/2.5/forecast/city?id=524901&APPID=788e5243a8bed6df60e79a13643a3d4a
+
+1. We need an object with 3 functions:  Leha
+	0) api key has t o e a field.
+	a) getCurrentWeather(cityId, callback)
+	b) getForecast(cityId, callback)
+	c) getHistory(cityId, callback)
+2. Client for elasticsearch : Palych
+	a) create indexes and mappings
+	b) logic for writing and reading from elasticsearch
+3. Create a node server: Leha
+	a) ports, iptables
+	b) write a simple REST API  : server.net?q=history/current/forecast&cityId=
+
+4. Frontend angular, d3, bootstrap
