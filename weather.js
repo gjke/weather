@@ -1,5 +1,5 @@
 Client = require('node-rest-client').Client;
-
+var urlutils = require('url');
 client = new Client();
 var requestKey = "788e5243a8bed6df60e79a13643a3d4a";
 
@@ -14,6 +14,7 @@ function getFullRequestLink	(cityId, key, mode) {
 	}
 }
 
+
 module.exports.requestCurrent = function (cityId, callback) {	
 	client.get(getFullRequestLink(cityId, requestKey, 'current'), function(data, response) {
 			callback(JSON.parse(data));
@@ -26,6 +27,8 @@ module.exports.requestForecast = function (cityId, callback) {
 
 	});
 }
+
+console.log(urlutils.parse(getFullRequestLink(524901, requestKey, 'current'), true));
 
 
 
