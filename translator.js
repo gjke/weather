@@ -21,6 +21,9 @@ app.get('/', function(req, res) {
     title: 'Заполните форму для перевода.'
   });
 });
+app.get('/citylist', function(req, res) {
+	res.sendFile(__dirname + '/city.list.json');
+});
 
 app.post('/', function(req, res) {
   if (!req.body.text || req.body.text == "") {
@@ -45,14 +48,14 @@ app.post('/', function(req, res) {
     }, function(error, response, json) {
       var data = {};
 
-      if (error) {
+      if (!json.name) {
         data = {
           title: "Не вижу такого города " + req.body.text,
           error: json.message
         }
       } else {
         data = {
-          title: 'Погода в городе '  + util.inspect(json) + ' (смотри в консоли)'
+          title: 'Погода в городе ' + util.inspect(json) + ''
         }
       }
       console.log(json);
