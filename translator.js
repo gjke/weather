@@ -43,30 +43,31 @@ app.post('/', function(req, res) {
           id: elem._id
         }
       });
+      request.get({
+        url: url,
+        json: true
+      }, function(error, response, json) {
+          var data = {};
+
+          if (!json.name) {
+            data = {
+              title: "Не вижу такого города " + req.body.text,
+              error: json.message
+            }
+          } else {
+            data = {
+              title: 'Погода в городе ' + util.inspect(json) + ''
+            }
+          }
+          //console.log(json);
+          res.render('translator', data);
+
+        }
+      );
       console.log(url);
     });
     //console.log(url);
     //http://api.openweathermap.org/data/2.5/weather?id=524901&appid=788e5243a8bed6df60e79a13643a3d4a
-    request.get({
-      url: url,
-      json: true
-    }, function(error, response, json) {
-      var data = {};
-
-      if (!json.name) {
-        data = {
-          title: "Не вижу такого города " + req.body.text,
-          error: json.message
-        }
-      } else {
-        data = {
-          title: 'Погода в городе ' + util.inspect(json) + ''
-        }
-      }
-      //console.log(json);
-      res.render('translator', data);
-
-    });
   }
 });
 
@@ -90,6 +91,7 @@ function nameToId(name, callback) {
     if (err) throw err;
     var arr = data.toString().split('\n');
     arr.forEach(function(value, index, array) {
+      console.log(value);
       if (JSON.parse(value).name == name) {
         callback(JSON.parse(value));
       }
