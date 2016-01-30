@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var util = require('util');
+var fs = require('fs');
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({
@@ -22,7 +23,7 @@ app.get('/', function(req, res) {
   });
 });
 app.get('/citylist', function(req, res) {
-	res.sendFile(__dirname + '/city.list.json');
+  res.sendFile(__dirname + '/city.list.json');
 });
 
 app.post('/', function(req, res) {
@@ -31,16 +32,20 @@ app.post('/', function(req, res) {
       title: "Выберите город"
     });
   } else {
-    var url = urlutils.format({
-      protocol: 'http',
-      hostname: 'api.openweathermap.org',
-      pathname: '/data/2.5/weather',
-      query: {
-        appid: '788e5243a8bed6df60e79a13643a3d4a',
-        id: req.body.text
-      }
+    var url
+    nameToId(req.body.text, function(elem) {
+      var url = urlutils.format({
+        protocol: 'http',
+        hostname: 'api.openweathermap.org',
+        pathname: '/data/2.5/weather',
+        query: {
+          appid: '788e5243a8bed6df60e79a13643a3d4a',
+          id: elem._id
+        }
+      });
+      console.log(url);
     });
-    console.log(url);
+    //console.log(url);
     //http://api.openweathermap.org/data/2.5/weather?id=524901&appid=788e5243a8bed6df60e79a13643a3d4a
     request.get({
       url: url,
@@ -58,7 +63,7 @@ app.post('/', function(req, res) {
           title: 'Погода в городе ' + util.inspect(json) + ''
         }
       }
-      console.log(json);
+      //console.log(json);
       res.render('translator', data);
 
     });
@@ -67,3 +72,27 @@ app.post('/', function(req, res) {
 
 app.listen(8080);
 console.log('Express server listening on port 8080');
+
+
+/*fs.readFile('city.list.json', function(err, data) {
+  if (err) throw err;
+  var arr = data.toString().split('\n');
+  arr.forEach(function(value, index, array) {
+    if (JSON.parse(value).country == 'UA') {
+      console.log(JSON.parse(value));
+    }
+  });
+});
+*/
+
+function nameToId(name, callback) {
+  fs.readFile('city.list.json', function(err, data) {
+    if (err) throw err;
+    var arr = data.toString().split('\n');
+    arr.forEach(function(value, index, array) {
+      if (JSON.parse(value).name == name) {
+        callback(JSON.parse(value));
+      }
+    });
+  });
+};
