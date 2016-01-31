@@ -33,40 +33,37 @@ app.post('/', function(req, res) {
     });
   } else {
     var url
-    nameToId(req.body.text, function(elem) {
+    nameToId(req.body.text, function(id) {
       var url = urlutils.format({
         protocol: 'http',
         hostname: 'api.openweathermap.org',
         pathname: '/data/2.5/weather',
         query: {
           appid: '788e5243a8bed6df60e79a13643a3d4a',
-          id: elem._id
+          id: id
         }
       });
       request.get({
         url: url,
         json: true
       }, function(error, response, json) {
-          var data = {};
+        var data = {};
 
-          if (!json.name) {
-            data = {
-              title: "Не вижу такого города " + req.body.text,
-              error: json.message
-            }
-          } else {
-            data = {
-              title: 'Погода в городе ' + util.inspect(json) + ''
-            }
+        if (!json.name) {
+          data = {
+            title: "Не вижу такого города " + req.body.text,
+            //error: json.message
           }
-          //console.log(json);
-          res.render('translator', data);
-
+        } else {
+          data = {
+            title: 'Погода в городе ' + util.inspect(json) + ''
+          }
         }
-      );
-      console.log(url);
+        console.log(json);
+        res.render('translator', data);
+
+      });
     });
-    //console.log(url);
     //http://api.openweathermap.org/data/2.5/weather?id=524901&appid=788e5243a8bed6df60e79a13643a3d4a
   }
 });
@@ -75,26 +72,33 @@ app.listen(8080);
 console.log('Express server listening on port 8080');
 
 
-/*fs.readFile('city.list.json', function(err, data) {
-  if (err) throw err;
-  var arr = data.toString().split('\n');
-  arr.forEach(function(value, index, array) {
-    if (JSON.parse(value).country == 'UA') {
-      console.log(JSON.parse(value));
-    }
-  });
-});
-*/
+
 
 function nameToId(name, callback) {
   fs.readFile('city.list.json', function(err, data) {
     if (err) throw err;
+    var res = '';
     var arr = data.toString().split('\n');
     arr.forEach(function(value, index, array) {
-      console.log(value);
       if (JSON.parse(value).name == name) {
-        callback(JSON.parse(value));
+        res = res + JSON.parse(value)._id + '\n';
       }
     });
+    callback(res.split('\n')[0]);
   });
 };
+
+
+/*nameToId('Moscow', function(id) {
+  var url = urlutils.format({
+    protocol: 'http',
+    hostname: 'api.openweathermap.org',
+    pathname: '/data/2.5/weather',
+    query: {
+      appid: '788e5243a8bed6df60e79a13643a3d4a',
+      id: id
+    }
+  });
+  console.log(url);
+});
+*/
